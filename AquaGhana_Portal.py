@@ -7,18 +7,13 @@ import psycopg2
 from sqlalchemy import create_engine
 import streamlit_authenticator as stauth
 from supabase import create_client, Client
-from twilio.rest import Client as TwilioClient
 
 # --- CONFIG ---
 DB_URL = st.secrets["db_url"]  # Use Streamlit secrets
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-TWILIO_SID = st.secrets["TWILIO_SID"]
-TWILIO_AUTH_TOKEN = st.secrets["TWILIO_AUTH_TOKEN"]
-TWILIO_PHONE = st.secrets["TWILIO_PHONE"]
 engine = create_engine(DB_URL)
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-twilio_client = TwilioClient(TWILIO_SID, TWILIO_AUTH_TOKEN)
 
 # --- Upload handler for Supabase ---
 def upload_to_supabase(file):
