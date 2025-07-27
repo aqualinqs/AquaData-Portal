@@ -1,0 +1,10 @@
+streamlit
+psycopg2-binary
+streamlit-authenticator
+sqlalchemy
+pydeck
+plotly
+pandas
+numpy
+supabase
+twilio
