@@ -1,11 +1,11 @@
-    import streamlit as st
-    import pandas as pd
-    import numpy as np
-    import plotly.express as px
-    import pydeck as pdk
-    import psycopg2
-    from sqlalchemy import create_engine
-    from supabase import create_client, Client
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import pydeck as pdk
+import psycopg2
+from sqlalchemy import create_engine
+from supabase import create_client, Client
     
     # --- CONFIG ---
     DB_URL = st.secrets["db_url"]  # Use Streamlit secrets
