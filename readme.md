@@ -66,13 +66,16 @@ pip install -r requirements.txt
 # Launch the Streamlit app
 streamlit run AquaGhana_Portal.py
 
----
 🔐 Create a .streamlit/secrets.toml file for your credentials.
 
-🧪 Testing & Sample Data
+---
+
+### 🧪 Testing & Sample Data
 Mock SQL seed scripts and test cases available in AquaGhana_data.sql.
 
-🤝 Contributions Welcome!
+---
+
+### 🤝 Contributions Welcome!
 We love contributions! If you'd like to:
 
 Add more analytics
@@ -83,8 +86,11 @@ Expand to other African countries
 
 Fork, branch, and send a PR 🚀
 
+---
+
 📩 Contact
 Built by: @aqualinqs
 📧 Email: aqualinqs22@gmail.com
 
 This project is made with ❤️ for sustainable aquaculture and nutrition security in Ghana.
+---
