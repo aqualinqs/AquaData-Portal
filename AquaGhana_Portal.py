@@ -1,50 +1,31 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import plotly.express as px
-import pydeck as pdk
-import psycopg2
-from sqlalchemy import create_engine
-import streamlit_authenticator as stauth
-from supabase import create_client, Client
+    import streamlit as st
+    import pandas as pd
+    import numpy as np
+    import plotly.express as px
+    import pydeck as pdk
+    import psycopg2
+    from sqlalchemy import create_engine
+    from supabase import create_client, Client
+    
+    # --- CONFIG ---
+    DB_URL = st.secrets["db_url"]  # Use Streamlit secrets
+    SUPABASE_URL = st.secrets["SUPABASE_URL"]
+    SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+    engine = create_engine(DB_URL)
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# --- CONFIG ---
-DB_URL = st.secrets["db_url"]  # Use Streamlit secrets
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
-SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-engine = create_engine(DB_URL)
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    # --- Upload handler for Supabase ---
+    def upload_to_supabase(file):
+        file_name = file.name
+        data = file.read()
+        response = supabase.storage.from_('business-file').upload(file_name, data, {"content-type": file.type})
+        return response
 
-# --- Upload handler for Supabase ---
-def upload_to_supabase(file):
-    file_name = file.name
-    data = file.read()
-    response = supabase.storage.from_('business-file').upload(file_name, data, {"content-type": file.type})
-    return response
-
-# --- AUTHENTICATION ---
-credentials = {
-    "usernames": {
-        "admin": {
-            "name": "Admin",
-            "password": "$2b$12$KIX./pTxZ5f3zCQvJOby9u.xn5HvV1FuH4h3PAzQ5LB5UNWa2biNu"  # hashed 'admin123'
-        }
-    }
-}
-authenticator = stauth.Authenticate(credentials, "aqualinqs", "abcdef", cookie_expiry_days=30)
-name, auth_status, username = authenticator.login("Login", "main")
-
-if auth_status is False:
-    st.error("Incorrect username or password")
-elif auth_status is None:
-    st.warning("Please enter your credentials")
-elif auth_status:
-    authenticator.logout("Logout", "sidebar")
-    st.sidebar.success(f"Welcome {name}!")
 
     # --- NAVIGATION ---
-    pages = ["Home", "Register Business", "Market & Investor Registration", "Matchmaking", "View Directory", "Media Upload/Download", "Visual Board", "Admin Dashboard", "Business Alerts",]
-    choice = st.sidebar.selectbox("Menu", pages)
+    menu = ["Home", "Register Business", "Market & Investor Registration", "Matchmaking", "View Directory", "Media Upload/Download", "Visual Board", "Admin Dashboard", "Business Alerts",]
+    choice = st.sidebar.selectbox("Navigation", menu)
+
 
     # --- PAGE: HOME ---
     if choice == "Home":
