@@ -5,37 +5,38 @@ import plotly.express as px
 import pydeck as pdk
 import psycopg2
 from sqlalchemy import create_engine
+import streamlit_authenticator as stauth
 from supabase import create_client, Client
-    
-    # --- CONFIG ---
-    DB_URL = st.secrets["db_url"]  # Use Streamlit secrets
-    SUPABASE_URL = st.secrets["SUPABASE_URL"]
-    SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-    engine = create_engine(DB_URL)
-    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-    # --- Upload handler for Supabase ---
-    def upload_to_supabase(file):
-        file_name = file.name
-        data = file.read()
-        response = supabase.storage.from_('business-file').upload(file_name, data, {"content-type": file.type})
-        return response
 
 
-    # --- NAVIGATION ---
-    menu = ["Home", "Register Business", "Market & Investor Registration", "Matchmaking", "View Directory", "Media Upload/Download", "Visual Board", "Admin Dashboard", "Business Alerts",]
-    choice = st.sidebar.selectbox("Navigation", menu)
+# --- CONFIG ---
+DB_URL = st.secrets["db_url"]  # Use Streamlit secrets
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+engine = create_engine(DB_URL)
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# --- Upload handler for Supabase ---
+def upload_to_supabase(file):
+    file_name = file.name
+    data = file.read()
+    response = supabase.storage.from_('business-files').upload(file_name, data, {"content-type": file.type})
+    return response
 
 
-    # --- PAGE: HOME ---
-    if choice == "Home":
+# --- NAVIGATION ---
+menu = ["Home", "Register Business", "Market & Investor Registration", "Matchmaking", "Business Directory", "Media Upload/Download", "Visual Board", "Business Alerts", "Admin Dashboard",]
+choice = st.sidebar.selectbox("Navigation", menu)
+
+# --- PAGE: HOME ---
+if choice == "Home":
         st.title("🇬🇭 AquaData Portal")
         st.markdown("""Connecting Ghanaian-owned aquaculture businesses with suppliers, markets, investors, and service providers.""")
 
-    # --- PAGE: REGISTER BUSINESS ---
-    elif choice == "Register Business":
-        st.subheader("Register Aquaculture Business")
-        with st.form("register_form"):
+# --- PAGE: REGISTER BUSINESS ---
+elif choice == "Register Business":
+    st.subheader("Register Aquaculture Business")
+    with st.form("register_form"):
             business_name = st.text_input("Business Name")
             owner_name = st.text_input("Owner Name")
             email = st.text_input("Email")
@@ -50,6 +51,7 @@ from supabase import create_client, Client
             certification = st.multiselect("Certifications", ["FDA", "MoFA", "None"])
             challenges = st.text_area("Current Challenges")
             submitted = st.form_submit_button("Register")
+        
 
             if submitted:
                 with engine.connect() as conn:
@@ -62,11 +64,11 @@ from supabase import create_client, Client
                           business_type, fish_species, prod_capacity, certification, challenges))
                 st.success("Business Registered Successfully!")
 
-    # --- PAGE: MARKET & INVESTOR REGISTRATION ---
-    elif choice == "Market & Investor Registration":
-        tab1, tab2 = st.tabs(["Register Market", "Register Investor"])
+# --- PAGE: MARKET & INVESTOR REGISTRATION ---
+elif choice == "Market & Investor Registration":
+    tab1, tab2 = st.tabs(["Register Market", "Register Investor"])
 
-        with tab1:
+    with tab1:
             st.subheader("Market Registration")
             with st.form("market_form"):
                 m_name = st.text_input("Market Name")
@@ -85,7 +87,7 @@ from supabase import create_client, Client
                         """, (m_name, m_type, m_region, m_fish, m_vol, m_email, m_phone))
                     st.success("Market registered.")
 
-        with tab2:
+    with tab2:
             st.subheader("Investor Registration")
             with st.form("investor_form"):
                 i_name = st.text_input("Investor Name")
@@ -104,11 +106,11 @@ from supabase import create_client, Client
                         """, (i_name, i_type, i_interest, i_min, i_max, i_email, i_phone))
                     st.success("Investor registered.")
 
-    # --- PAGE: MATCHMAKING ---
-    elif choice == "Matchmaking":
-        tab1, tab2 = st.tabs(["Supplier Matchmaking", "Investor Matchmaking"])
+# --- PAGE: MATCHMAKING ---
+elif choice == "Matchmaking":
+    tab1, tab2 = st.tabs(["Supplier Matchmaking", "Investor Matchmaking"])
 
-        with tab1:
+    with tab1:
             st.subheader("Supplier Matching Recommendations")
             species_filter = st.selectbox("Select Fish Species", ["Tilapia", "Catfish"])
             region_filter = st.selectbox("Select Region", ["Greater Accra", "Ashanti", "Bono"])
@@ -120,7 +122,7 @@ from supabase import create_client, Client
             df = pd.read_sql_query(query, engine)
             st.write("Recommended Suppliers:", df)
 
-        with tab2:
+    with tab2:
             st.subheader("🤝 Investor Matching Recommendations")
             businesses = pd.read_sql("SELECT * FROM aquaculture_business", engine)
             investors = pd.read_sql("SELECT * FROM investor", engine)
@@ -139,75 +141,93 @@ from supabase import create_client, Client
                 st.dataframe(matches[["name", "region", "investment_type", "target_sector", "contact_email", "phone_number"]])
 
 
-    # --- PAGE: BUSINESS DIRECTORY ---
-    elif choice == "View Directory":
-        st.subheader("All Registered Businesses")
-        df = pd.read_sql_query("SELECT * FROM aquaculture_business", engine)
-        st.dataframe(df)
+# --- PAGE: BUSINESS DIRECTORY ---
+elif choice == "Business Directory":
+    st.subheader("All Registered Businesses")
+    df = pd.read_sql_query("SELECT * FROM aquaculture_business", engine)
+    st.dataframe(df)
 
-    # --- PAGE: MEDIA UPLOAD/DOWNLOAD ---
-    elif choice == "Upload/Download File":
-        tab1, tab2 = st.tabs(["Upload File", "Download File"])
+# --- PAGE: MEDIA UPLOAD/DOWNLOAD ---
+elif choice == "Upload/Download File":
+    tab1, tab2 = st.tabs(["Upload File", "Download File"])
 
-        with tab1:
+    with tab1:
             st.subheader("Upload Business File")
             file = st.file_uploader("Choose a file", type=["pdf", "jpg", "png, docx, txt, mp3, mp4"])
             if file:
                 result = upload_to_supabase(file)
             if result.status_code == 200:
-                st.success(f"Uploaded {file.name} successfully!")  # Save to cloud/S3 in real app
+                st.success(f"Uploaded {file.name} successfully!")  # Save to S3 in supabase
             else:
                 st.error("Upload failed. Please try again.")
 
 
-        with tab2:
+    with tab2:
             st.subheader("Download Business File")
             downloaded_file = st.download_button("Download Doument", file_name="certificate.pdf")
             if downloaded_file:
-                st.success("Download successful!")  # Save to cloud/S3 in real app
+                st.success("Download successful!")  # Save to S3 in supabase
             else:
                 st.error("Download failed. Please try again.")
 
-    # --- PAGE: VISUAL BOARD ---
-    elif choice == "Visual Board":
-        st.subheader("Geospatial Distribution")
-        df = pd.read_sql_query("SELECT business_name, gps_lat, gps_lon, region FROM aquaculture_business", engine)
-        st.map(df, latitude="gps_lat", longitude="gps_lon", color="[0, 160, 200, 30]")
-
-        
-
-        st.subheader("Supplier Gaps")
-        df_sup = pd.read_sql_query("SELECT region, COUNT(*) AS count FROM supplier GROUP BY region", engine)
-        fig = px.bar(df_sup, x="region", y="supplier_count", color="supply_type", title="Supplier Distribution by Region")
-        st.plotly_chart(fig)
+# --- PAGE: VISUAL BOARD ---
+elif choice == "Visual Board":
+    st.subheader("Geospatial Distribution")
+    df = pd.read_sql_query("SELECT business_name, gps_lat, gps_lon, region FROM aquaculture_business", engine)
+    st.map(df, latitude="gps_lat", longitude="gps_lon", color="[0, 160, 200, 30]")
 
 
 
-    # --- PAGE: ADMIN DASHBOARD ---
-    elif choice == "Admin Dashboard":
-        st.title("📊 Admin Dashboard")
+    st.subheader("Supplier Gaps")
+    df_sup = pd.read_sql_query("SELECT region, COUNT(*) AS count FROM supplier GROUP BY region", engine)
+    fig = px.bar(df_sup, x="region", y="supplier_count", color="supply_type", title="Supplier Distribution by Region")
+    st.plotly_chart(fig)
 
-        # Business registrations by region
-        df = pd.read_sql_query("SELECT region, COUNT(*) AS count FROM aquaculture_business GROUP BY region", engine)
-        st.subheader("Registrations by Region")
-        fig = px.bar(df, x="region", y="count", color="region", title="Business Count by Region")
-        st.plotly_chart(fig)
 
-        # Production capacity summary
-        df_cap = pd.read_sql_query("SELECT region, SUM(production_capacity) as total_production FROM aquaculture_business GROUP BY region", engine)
-        st.subheader("Production Capacity by Region")
-        st.dataframe(df_cap)
+# --- PAGE: ALERTS & NOTIFICATIONS ---
+elif choice == "Business Alerts":
+    st.title("🗞️ News Alerts & Notifications")
 
-        # View full dataset
-        st.subheader("All Business Records")
-        df_all = pd.read_sql_query("SELECT * FROM aquaculture_business", engine)
-        st.dataframe(df_all)
+    st.markdown("""
+    Stay updated with the latest aquaculture business news, alerts, and notifications in Ghana.
+    """)
 
-        # CSV Export
-        csv = df_all.to_csv(index=False).encode('utf-8')
-        st.download_button("Download as CSV", csv, "aquaculture_businesses.csv", "text/csv")
+    news_df = pd.read_sql("SELECT * FROM business_notifications ORDER BY created_at DESC", engine)
 
-    
-    # --- PAGE: ALERTS & NOTIFICATIONS ---
-    elif choice == "Business Alerts":
-        st.subheader("News Alerts & Notifications")
+    for _, row in news_df.iterrows():
+        st.info(f"**{row['title']}**\n\n{row['message']}\n\n*Posted on {row['created_at']}*")
+
+    with st.expander("📣 Add New Notification (Admin Only)"):
+        title = st.text_input("Title")
+        message = st.text_area("Message")
+        if st.button("Post Notification"):
+            with engine.connect() as conn:
+                conn.execute(
+                    "INSERT INTO business_notifications (title, message, created_at) VALUES (%s, %s, now())",
+                    (title, message)
+                )
+                st.success("Notification posted successfully.")
+
+# --- PAGE: ADMIN DASHBOARD ---
+elif choice == "Admin Dashboard":
+    st.title("📊 Admin Panel")
+
+# Business registrations by region
+df = pd.read_sql_query("SELECT region, COUNT(*) AS count FROM aquaculture_business GROUP BY region", engine)
+st.subheader("Registrations by Region")
+fig = px.bar(df, x="region", y="count", color="region", title="Business Count by Region")
+st.plotly_chart(fig)
+
+# Production capacity summary
+df_cap = pd.read_sql_query("SELECT region, SUM(production_capacity) as total_production FROM aquaculture_business GROUP BY region", engine)
+st.subheader("Production Capacity by Region")
+st.dataframe(df_cap)        
+
+# View full dataset
+st.subheader("All Business Records")
+df_all = pd.read_sql_query("SELECT * FROM aquaculture_business", engine)
+st.dataframe(df_all)
+
+# CSV Export
+csv = df_all.to_csv(index=False).encode('utf-8')
+st.download_button("Download as CSV", csv, "aquaculture_businesses.csv", "text/csv")
