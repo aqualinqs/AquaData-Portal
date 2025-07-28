@@ -4,6 +4,10 @@ import numpy as np
 import plotly.express as px
 import pydeck as pdk
 
+# toggle mode
+st.sidebar.markdown("### App Mode")
+MODE = st.sidebar.radio("Select mode:", ["Demo", "Live"])
+
 # --- DEMO MODE MOCK DATA ---
 mock_businesses = pd.DataFrame({
     'business_name': ['Lake Aqua Farms', 'Tilapia Gold Ltd'],
