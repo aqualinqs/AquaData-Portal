@@ -8,18 +8,20 @@
 A Streamlit-based data platform that links Ghanaian-owned aquaculture businesses with suppliers, markets, investors and key service providers in the aquaculture industry.
 
 ---
+## 🚀 Features
 
-### 🚀 Features
-
-- ✅ **Business Registration** – Capture geolocated aquaculture business data
-- 📈 **Admin Dashboard** – Visualize production by region and business stages
-- 🧭 **Geospatial Clustering** – Map aquaculture businesses across Ghana
-- 🤝 **Investor Matchmaking** – Match investors with verified businesses
-- 📤 **Supabase Storage** – Upload & manage media documents (PDFs, images)
-- 📬 **Email & SMS Alerts** – Notify investors using Twilio and Gmail
-- 📊 **Interactive Charts** – Built with Plotly and PyDeck
-- 🔐 **Authentication** – Secure access via Streamlit Authenticator
-
+| Page | Functionality |
+|------|---------------|
+| 🏠 Home | Overview of the portal |
+| 🐟 Business Registration | Form to capture geolocated aquaculture business data |
+| 🧾 Market & Investor Registration | Register as a market or investor |
+| 🤝 Matchmaking | Auto-match businesses with investors & suppliers based on region, stage, and sector |
+| 📁 Upload Docs | Upload business plans, images, licenses to Supabase bucket |
+| 📍 Visualize Interactive Charts | Map view of business clustering (PyDeck) |
+| 📊 Admin Dashboard | Filtered business analytics, CSV export, and production data visualization |
+| 🔔 News & Alerts | View and manage real-time notifications and admin messages |
+| ✉️ Notifications | Email and SMS notifications using Gmail SMTP and Twilio |
+| 🧾 Match Reports | Download investor match results as CSV |
 ---
 
 ### 🎯 Project Goal
@@ -70,6 +72,20 @@ streamlit run AquaGhana_Portal.py
 
 ---
 
+### 🌐 Deploying to Streamlit Cloud
+Fork this repo.
+
+Push to your GitHub.
+
+Go to Streamlit Cloud → New App.
+
+Set repo & branch.
+
+Add Secrets via Settings.
+
+Click Deploy 🚀
+---
+
 ### 🧪 Testing & Sample Data
 Mock SQL seed scripts and test cases available in AquaGhana_data.sql.
 
@@ -78,11 +94,15 @@ Mock SQL seed scripts and test cases available in AquaGhana_data.sql.
 ### 🤝 Contributions Welcome!
 We love contributions! If you'd like to:
 
-Add more analytics
+- Add more analytics
 
-Connect to blockchain traceability
+- Connect to blockchain traceability
 
-Expand to other African countries
+- Expand to other African countries
+
+- Add Alert scheduling features
+
+- Add WhatsApp API support
 
 Fork, branch, and send a PR 🚀
 
