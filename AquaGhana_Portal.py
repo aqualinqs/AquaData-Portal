@@ -5,7 +5,6 @@ import plotly.express as px
 import pydeck as pdk
 import psycopg2
 from sqlalchemy import create_engine
-import streamlit_authenticator as stauth
 from supabase import create_client, Client
 
 
