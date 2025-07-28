@@ -7,10 +7,8 @@ from supabase import create_client, Client
 
 
 # --- CONFIG ---
-DB_URL = st.secrets["db_url"]  # Use Streamlit secrets
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-engine = create_engine(DB_URL)
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- Upload handler for Supabase ---
